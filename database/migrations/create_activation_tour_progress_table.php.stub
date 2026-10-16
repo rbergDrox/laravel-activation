@@ -1,0 +1,44 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+/**
+ * Tour position per person per subject, so a teammate who joins an already
+ * activated subject still gets their own walkthrough. Dismissed hints share
+ * the table under a `hint:` key prefix.
+ */
+return new class extends Migration
+{
+    public function up(): void
+    {
+        $foreignKey = config('activation.subject.foreign_key');
+        $subjectTable = config('activation.subject.table');
+
+        Schema::create(config('activation.progress_table'), function (Blueprint $table) use ($foreignKey, $subjectTable): void {
+            $table->ulid('id')->primary();
+            $table->foreignId('user_id')->constrained()->cascadeOnDelete();
+
+            match (config('activation.subject.key_type', 'id')) {
+                'ulid' => $table->foreignUlid($foreignKey)->constrained($subjectTable)->cascadeOnDelete(),
+                'uuid' => $table->foreignUuid($foreignKey)->constrained($subjectTable)->cascadeOnDelete(),
+                default => $table->foreignId($foreignKey)->constrained($subjectTable)->cascadeOnDelete(),
+            };
+
+            $table->string('tour_key', 64);
+            $table->string('status', 32)->default('not_started');
+            $table->unsignedSmallInteger('step_index')->default(0);
+            $table->timestampTz('last_seen_at')->nullable();
+            $table->timestampTz('completed_at')->nullable();
+            $table->timestampsTz();
+
+            $table->unique(['user_id', $foreignKey, 'tour_key']);
+        });
+    }
+
+    public function down(): void
+    {
+        Schema::dropIfExists(config('activation.progress_table'));
+    }
+};

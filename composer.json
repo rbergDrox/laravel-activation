@@ -1,0 +1,60 @@
+{
+    "name": "shapperize/laravel-activation",
+    "description": "Aha-moment activation for Laravel SaaS apps: proof-of-value steps, plan gates, regression, tour and hint state.",
+    "keywords": [
+        "laravel",
+        "onboarding",
+        "activation",
+        "product-tour",
+        "saas",
+        "hints"
+    ],
+    "license": "MIT",
+    "homepage": "https://github.com/rbergDrox/laravel-activation",
+    "authors": [
+        {
+            "name": "Technologies Shapperize Inc."
+        }
+    ],
+    "require": {
+        "php": "^8.3",
+        "laravel/framework": "^12.0 || ^13.0"
+    },
+    "require-dev": {
+        "larastan/larastan": "^3.0",
+        "laravel/pint": "^1.20",
+        "orchestra/testbench": "^10.0 || ^11.0",
+        "pestphp/pest": "^3.0 || ^4.0",
+        "pestphp/pest-plugin-laravel": "^3.0 || ^4.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Shapperize\\Activation\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Shapperize\\Activation\\Tests\\": "tests/"
+        }
+    },
+    "scripts": {
+        "test": "pest",
+        "analyse": "phpstan analyse --memory-limit=1G",
+        "format": "pint"
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Shapperize\\Activation\\ActivationServiceProvider"
+            ]
+        }
+    },
+    "config": {
+        "sort-packages": true,
+        "allow-plugins": {
+            "pestphp/pest-plugin": true
+        }
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true
+}

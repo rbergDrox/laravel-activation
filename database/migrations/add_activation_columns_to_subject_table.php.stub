@@ -1,0 +1,40 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+/**
+ * Activation is a property of the subject, not of whoever finished the last
+ * step. The completed timestamp also short-circuits the per-request lookup
+ * once it is set.
+ */
+return new class extends Migration
+{
+    public function up(): void
+    {
+        $subjectTable = config('activation.subject.table');
+        $completed = config('activation.subject.completed_at_column');
+        $celebrated = config('activation.subject.celebrated_at_column');
+
+        Schema::table($subjectTable, function (Blueprint $table) use ($subjectTable, $completed, $celebrated): void {
+            if (! Schema::hasColumn($subjectTable, $completed)) {
+                $table->timestampTz($completed)->nullable();
+            }
+
+            if (! Schema::hasColumn($subjectTable, $celebrated)) {
+                $table->timestampTz($celebrated)->nullable();
+            }
+        });
+    }
+
+    public function down(): void
+    {
+        Schema::table(config('activation.subject.table'), function (Blueprint $table): void {
+            $table->dropColumn([
+                config('activation.subject.completed_at_column'),
+                config('activation.subject.celebrated_at_column'),
+            ]);
+        });
+    }
+};
